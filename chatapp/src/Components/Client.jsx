@@ -28,7 +28,7 @@ const Client = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const result = await axios.get("http://localhost:8001/getUserData", {
+      const result = await axios.get(`${process.env.REACT_APP_Server_URL}/getUserData`, {
         params: {
           username: sessionStorageName,
           roomid: sessionStorage.getItem("userId"),
@@ -67,7 +67,7 @@ const Client = () => {
     async function fetchData() {
       const roomname = sessionStorageRoomName;
       const result = await axios.get(
-        `http://localhost:8001/getUserAccordingtoRoom/${roomname}`
+        `${process.env.REACT_APP_Server_URL}/getUserAccordingtoRoom/${roomname}`
       );
       if (result.status === 200) {
         setUserName(result?.data?.data);
@@ -108,7 +108,7 @@ const Client = () => {
 
     if (sendBodyData) {
       const result = await axios.post(
-        "http://localhost:8001/saveMessageData",
+        `${process.env.REACT_APP_Server_URL}/saveMessageData`,
         sendBodyData
       );
       if (result.status === 200) {

@@ -18,7 +18,7 @@ const Room = () => {
 
   useEffect(() => {
     const fetchRoomData = async () => {
-      const resultData = await axios.get("http://localhost:8001/getroomOption");
+      const resultData = await axios.get(`${process.env.REACT_APP_Server_URL}/getroomOption`);
       if (resultData) {
         setSelectData(resultData?.data?.data);
       }
@@ -33,7 +33,7 @@ const Room = () => {
       date: new Date().toDateString(),
       time: DateTime.local().toLocaleString(DateTime.TIME_24_SIMPLE),
     };
-    const result = await axios.post("http://localhost:8001/saveroomdata", data);
+    const result = await axios.post(`${process.env.REACT_APP_Server_URL}/saveroomdata`, data);
     if (result?.data?.statusCode === 200) {
       // Cookies.set("s_id", result?.data?.s_id);
       navigate("/");

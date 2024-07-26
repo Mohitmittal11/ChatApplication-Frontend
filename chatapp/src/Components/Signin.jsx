@@ -11,7 +11,9 @@ const Signin = () => {
 
   useEffect(() => {
     const fetchRoomData = async () => {
-      const resultData = await axios.get("http://localhost:8001/getroomOption");
+      const resultData = await axios.get(
+        `${process.env.REACT_APP_Server_URL}/getroomOption`
+      );
       if (resultData) {
         setOptionData(resultData?.data?.data);
       }
@@ -28,7 +30,7 @@ const Signin = () => {
   const formSubmit = async (data) => {
     console.log("data un", data);
     const result = await axios.post(
-      "http://localhost:8001/getSigininInfo",
+      `${process.env.REACT_APP_Server_URL}/getSigininInfo`,
       data
     );
     if (result?.data?.statusCode === 200) {
