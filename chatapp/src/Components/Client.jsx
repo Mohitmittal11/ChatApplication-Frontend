@@ -12,6 +12,7 @@ const Client = () => {
   const [userdata, setUserdata] = useState();
   const [socket, setSocket] = useState(null);
   const [userMessage, setUserMessage] = useState();
+  const [isActive, setIsActive]= useState(false);
   const [userName, setUserName] = useState();
 
   let [messageData, setMessageData] = useState();
@@ -86,7 +87,7 @@ const Client = () => {
 
   const handleMessageSubmit = async (e) => {
     e.preventDefault();
-
+    setIsActive(true);
     const element = document.getElementById("message-Area");
     element.scrollIntoView({ behavior: "instant" });
 
@@ -171,7 +172,7 @@ const Client = () => {
                 name="text"
                 id="sendmessageid"
               />
-              <button id="sendbtn">Send</button>
+              <button id="sendbtn">{isActive ? "Loading...": "Send"}</button>
             </form>
           </div>
         </div>

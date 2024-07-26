@@ -10,6 +10,7 @@ const Room = () => {
   const navigate = useNavigate();
   const [selectdata, setSelectData] = useState();
   const [isuserRegistered, setIsUserRegistered] = useState();
+  const [isActive, setIsActive]= useState(false);
   const {
     register,
     handleSubmit,
@@ -27,6 +28,7 @@ const Room = () => {
   }, []);
 
   const handleFormSubmit = async (data) => {
+    setIsActive(true);
     data = {
       ...data,
       microtime: Date.now(),
@@ -35,7 +37,6 @@ const Room = () => {
     };
     const result = await axios.post(`${process.env.REACT_APP_Server_URL}/saveroomdata`, data);
     if (result?.data?.statusCode === 200) {
-      // Cookies.set("s_id", result?.data?.s_id);
       navigate("/");
     }
     if (result?.data?.statusCode === 409) {
@@ -99,7 +100,7 @@ const Room = () => {
               {errors?.room_name && errors?.room_name?.message}
             </p>
           </div>
-          <button id="joinroomid">Join Room</button>
+          <button id="joinroomid">{isActive ? "Loading...": "Join Room"}</button>
           <span onClick={() => navigate("/")} className="sigininNav">
             Signin ?
           </span>
