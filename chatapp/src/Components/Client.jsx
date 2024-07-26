@@ -46,11 +46,11 @@ const Client = () => {
     fetchData();
   }, [userMessage]);
 
-  useEffect(() => {
-    socket?.on("message", () => {
-      window.location.reload();
-    });
-  }, [socket]);
+  // useEffect(() => {
+  //   socket?.on("message", () => {
+  //     window.location.reload();
+  //   });
+  // }, [socket]);
 
   useEffect(() => {
     const roomId = sessionStorage.getItem("userId");
@@ -114,9 +114,9 @@ const Client = () => {
         `${process.env.REACT_APP_Server_URL}/saveMessageData`,
         sendBodyData
       );
-      if (result.status === 200) {
-        window.location.reload();
-      }
+      // if (result.status === 200) {
+      //   window.location.reload();
+      // }
     }
   };
 
