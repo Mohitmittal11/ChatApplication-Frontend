@@ -1,0 +1,79 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.joinroom {
+    text-align: center;
+}
+
+.errors {
+    text-align: left;
+    color: red;
+}
+
+#signinform {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    height: fit-content;
+    width: 300px;
+    margin: 40px auto;
+    padding: 20px 20px;
+    background-color: whitesmoke;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+
+}
+
+.input-Name {
+    width: 100%;
+    height: 25px;
+    text-indent: 10px;
+}
+
+.input-Name::placeholder {
+    font-size: 15px;
+    font-style: italic;
+}
+
+.input-Name:focus {
+    outline: none;
+}
+
+#sigininbtn {
+    width: 100%;
+    /* margin-top:30px; */
+    padding: 7px;
+    font-size: 15px;
+    background-color: rgb(121, 121, 221);
+    color: white;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+}
+
+.selectRoomdata {
+    width: 100%;
+    padding: 6px 0px;
+    font-size: 15px;
+    background-color: #58708a;
+    color: white;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.error {
+    color: red;
+    text-align: center;
+}
+
+.signUp {
+    text-align: center;
+    margin-top: 8px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 6px 6px;
+    cursor: pointer;
+
+}

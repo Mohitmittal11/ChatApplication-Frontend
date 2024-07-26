@@ -1,0 +1,141 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.innerOuter {
+    display: flex;
+    justify-content: center;
+}
+
+.outer-container h2 {
+    text-align: center;
+}
+
+#message-Area {
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    height: 420px;
+}
+
+.dateTime {
+    color: gray;
+}
+
+.roomName {
+    text-align: center;
+}
+
+.roomsdata {
+    height: 500px;
+    width: 150px;
+    background-color: whitesmoke;
+    padding: 0px 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    z-index: 1;
+    overflow-y: scroll;
+}
+
+.roomsdata h3 {
+    text-align: center;
+    padding: 5px 0px;
+    color: whitesmoke;
+    background-color: rgb(131, 131, 240);
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-weight: 550;
+    text-wrap: nowrap;
+}
+
+
+
+
+.main-chat-container {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    height: 500px;
+    width: 600px;
+    position: relative;
+    background-color: whitesmoke;
+}
+
+.sendMessageField {
+    display: flex;
+    justify-content: end;
+    position: absolute;
+    bottom: 0;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.sendtextMessage {
+    height: 37px;
+    width: 506px;
+    text-indent: 10px;
+    border: none;
+    z-index: 1;
+}
+
+.sendtextMessage:focus {
+    outline: none;
+}
+
+.sendtextMessage::placeholder {
+    font-size: 16px;
+    font-style: italic;
+}
+
+#sendbtn {
+    padding: 12px 20px;
+    font-size: 17px;
+    letter-spacing: 1px;
+    font-weight: 600;
+    background-color: #3279a8;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+
+.outgoingMessage {
+    text-align: right;
+    color: black;
+    margin: 0px 8px;
+
+}
+
+.time {
+    font-size: 14px;
+    margin-top: 0;
+}
+
+.outgoingMessage h4 {
+    padding: 7px 4px;
+    background-color: #79b0c9;
+    border-radius: 10px;
+    text-align: right;
+}
+
+.datauserName {
+    /* margin: 5px 5px; */
+    /* padding: auto; */
+    font-size: 12px;
+    color: white;
+}
+
+.incomingMessage {
+    color: black;
+    margin: 0px 8px;
+}
+
+.date {
+    text-align: center;
+    padding: 10px 10px;
+    letter-spacing: 1px;
+}
+
+.incomingMessage h4 {
+    text-align: left;
+    padding: 7px 4px;
+    border-radius: 10px;
+    background-color: #bfd2db;
+}
