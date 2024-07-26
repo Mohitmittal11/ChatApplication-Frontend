@@ -44,6 +44,12 @@ const Client = () => {
     myref.current?.scrollIntoView({ behavior: "instant" });
   }, [userMessage]);
 
+  useEffect(()=> {
+    socket?.on('message',()=> {
+      window.location.reload();
+    })
+  },[])
+
   useEffect(() => {
     const roomId = sessionStorage.getItem("userId");
     const userName = sessionStorageName;
@@ -103,6 +109,10 @@ const Client = () => {
         `${process.env.REACT_APP_Server_URL}/saveMessageData`,
         sendBodyData
       );
+
+      if(result.status === 200) {
+        window.location.reload(true);
+      }
     }
   };
 
