@@ -28,12 +28,15 @@ const Client = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const result = await axios.get(`${process.env.REACT_APP_Server_URL}/getUserData`, {
-        params: {
-          username: sessionStorageName,
-          roomid: sessionStorage.getItem("userId"),
-        },
-      });
+      const result = await axios.get(
+        `${process.env.REACT_APP_Server_URL}/getUserData`,
+        {
+          params: {
+            username: sessionStorageName,
+            roomid: sessionStorage.getItem("userId"),
+          },
+        }
+      );
 
       if (!result?.data?.errorMessage) {
         console.log("Result is ", result);
@@ -41,7 +44,7 @@ const Client = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [userMessage]);
 
   useEffect(() => {
     socket?.on("message", () => {
