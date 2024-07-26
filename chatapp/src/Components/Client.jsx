@@ -17,12 +17,9 @@ const Client = () => {
   let [messageData, setMessageData] = useState();
 
   useEffect(() => {
-    setSocket(io("http://localhost:8001"));
+    setSocket(io("https://chatapplication-server-wvxg.onrender.com"));
   }, []);
 
-  useEffect(() => {
-      myref.current?.scrollIntoView({ behavior: "instant" });
-  }, [userMessage]);
 
   useEffect(() => {
     async function fetchData() {
@@ -42,7 +39,13 @@ const Client = () => {
       }
     }
     fetchData();
+  }, []);
+
+
+  useEffect(() => {
+    myref.current?.scrollIntoView({ behavior: "instant" });
   }, [userMessage]);
+
 
   useEffect(() => {
     const roomId = sessionStorage.getItem("userId");
