@@ -21,9 +21,7 @@ const Client = () => {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
       myref.current?.scrollIntoView({ behavior: "instant" });
-    }, 0);
   }, [userMessage]);
 
   useEffect(() => {
