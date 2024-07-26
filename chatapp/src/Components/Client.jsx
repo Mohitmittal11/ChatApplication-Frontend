@@ -44,7 +44,7 @@ const Client = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [userMessage]);
 
   useEffect(() => {
     socket?.on("message", () => {
