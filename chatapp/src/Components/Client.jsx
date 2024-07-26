@@ -22,7 +22,7 @@ const Client = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      myref.current?.scrollIntoView({ behavior: "smooth" });
+      myref.current?.scrollIntoView({ behavior: "instant" });
     }, 0);
   }, [userMessage]);
 
@@ -45,12 +45,6 @@ const Client = () => {
     }
     fetchData();
   }, [userMessage]);
-
-  // useEffect(() => {
-  //   socket?.on("message", () => {
-  //     window.location.reload();
-  //   });
-  // }, [socket]);
 
   useEffect(() => {
     const roomId = sessionStorage.getItem("userId");
@@ -87,9 +81,6 @@ const Client = () => {
   const handleMessageSubmit = async (e) => {
     e.preventDefault();
 
-    const element = document.getElementById("message-Area");
-    element.scrollIntoView({ behavior: "instant" });
-
     socket?.emit("message", userdata);
     messageData = {
       ...messageData,
@@ -114,9 +105,6 @@ const Client = () => {
         `${process.env.REACT_APP_Server_URL}/saveMessageData`,
         sendBodyData
       );
-      // if (result.status === 200) {
-      //   window.location.reload();
-      // }
     }
   };
 
