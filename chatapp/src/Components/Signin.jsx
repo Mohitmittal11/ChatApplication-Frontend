@@ -7,8 +7,14 @@ import { useNavigate } from "react-router-dom";
 const Signin = () => {
   const [optionData, setOptionData] = useState();
   const [errorMessage, setErrorMessage] = useState("");
-  const [isActive, setIsActive]= useState(false);
+  const [isActive, setIsActive] = useState(false);
   const navigate = useNavigate();
+
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm();
 
   useEffect(() => {
     const fetchRoomData = async () => {
@@ -19,14 +25,12 @@ const Signin = () => {
         setOptionData(resultData?.data?.data);
       }
     };
-    fetchRoomData();
+    if (sessionStorage.length > 0) {
+      navigate("/chat");
+    } else {
+      fetchRoomData();
+    }
   }, []);
-
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-  } = useForm();
 
   const formSubmit = async (data) => {
     setIsActive(true);
@@ -41,8 +45,10 @@ const Signin = () => {
       sessionStorage.setItem("username", result?.data?.data[0]?.username);
       sessionStorage.setItem("r_name", result?.data?.data[0]?.room_name);
       navigate("/chat");
+      setIsActive(false);
     } else {
       setErrorMessage("Please Fill Correct Credentials");
+      setIsActive(false);
     }
   };
   return (
@@ -92,7 +98,7 @@ const Signin = () => {
               {errors?.room_name && errors?.room_name?.message}
             </p>
           </div>
-          <button id="sigininbtn">{isActive ? "Loading...": "Sign In"}</button>
+          <button id="sigininbtn">{isActive ? "Loading..." : "Sign In"}</button>
           <span onClick={() => navigate("/signup")} className="signUp">
             Sign Up?
           </span>

@@ -4,11 +4,14 @@ import "react-toastify/dist/ReactToastify.css";
 import { io } from "socket.io-client";
 import moment from "moment";
 import "../Style/client.css";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 const Client = () => {
+  const navigate = useNavigate();
   const myref = useRef(null);
   const sessionStorageName = sessionStorage.getItem("username");
   const sessionStorageRoomName = sessionStorage.getItem("r_name");
+  const sessionStorageId = sessionStorage.getItem("userId");
   const [userdata, setUserdata] = useState();
   const [socket, setSocket] = useState(null);
   const [userMessage, setUserMessage] = useState();
@@ -17,33 +20,40 @@ const Client = () => {
   let [messageData, setMessageData] = useState();
 
   useEffect(() => {
-    setSocket(io("https://chatapplication-server-wvxg.onrender.com"));
-  }, []);
+    if (!sessionStorageName || !sessionStorageRoomName || !sessionStorageId) {
+      navigate("/");
+    } else {
+      setSocket(io(`${process.env.REACT_APP_Server_URL}`));
+      async function fetchData() {
+        const result = await axios.get(
+          `${process.env.REACT_APP_Server_URL}/getUserData`,
+          {
+            params: {
+              username: sessionStorageName,
+              roomid: sessionStorageId,
+            },
+          }
+        );
 
-  useEffect(() => {
-    async function fetchData() {
-      const result = await axios.get(
-        `${process.env.REACT_APP_Server_URL}/getUserData`,
-        {
-          params: {
-            username: sessionStorageName,
-            roomid: sessionStorage.getItem("userId"),
-          },
+        const response = await axios.get(
+          `${process.env.REACT_APP_Server_URL}/getUserAccordingtoRoom/${sessionStorageRoomName}`
+        );
+
+        if (result?.data?.statusCode === 200) {
+          setUserMessage(result?.data?.data);
         }
-      );
 
-      if (!result?.data?.errorMessage) {
-        setUserMessage(result?.data?.data);
+        if (response?.data?.statusCode === 200) {
+          setUserName(response?.data?.data);
+        }
       }
+      fetchData();
     }
-    fetchData();
-  }, [userMessage]);
+  }, []);
 
   useEffect(() => {
     myref.current?.scrollIntoView({ behavior: "instant" });
   }, [userMessage]);
-
-
 
   useEffect(() => {
     const roomId = sessionStorage.getItem("userId");
@@ -59,19 +69,6 @@ const Client = () => {
     }
   }, [socket]);
 
-  useEffect(() => {
-    async function fetchData() {
-      const roomname = sessionStorageRoomName;
-      const result = await axios.get(
-        `${process.env.REACT_APP_Server_URL}/getUserAccordingtoRoom/${roomname}`
-      );
-      if (result.status === 200) {
-        setUserName(result?.data?.data);
-      }
-    }
-    fetchData();
-  }, []);
-
   const handleInputChange = (e) => {
     setUserdata({ ...userdata, usermessage: e.target.value });
     setMessageData({ ...messageData, message: e.target.value });
@@ -79,6 +76,7 @@ const Client = () => {
 
   const handleMessageSubmit = async (e) => {
     e.preventDefault();
+    document.getElementById("sendmessageid").value = "";
 
     socket?.emit("message", userdata);
     messageData = {
@@ -104,14 +102,25 @@ const Client = () => {
         `${process.env.REACT_APP_Server_URL}/saveMessageData`,
         sendBodyData
       );
-
-   
+      if (result.status === 200) {
+        window.location.reload();
+      }
+    }
+  };
+  const handleLogOut = () => {
+    const result = window.confirm("Do You Want to Log Out");
+    if (result) {
+      sessionStorage.clear();
+      navigate("/");
     }
   };
 
   return (
     <div className="outer-container">
       <ToastContainer />
+      <h4 className="logout" onClick={handleLogOut}>
+        Log Out
+      </h4>
       <h2>Chat Application</h2>
       <h3 className="roomName">{sessionStorage.getItem("r_name")}</h3>
       <div className="innerOuter">

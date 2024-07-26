@@ -1,16 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../Style/room.css";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { DateTime } from "luxon";
 
 const Room = () => {
   const navigate = useNavigate();
   const [selectdata, setSelectData] = useState();
   const [isuserRegistered, setIsUserRegistered] = useState();
-  const [isActive, setIsActive]= useState(false);
+  const [isActive, setIsActive] = useState(false);
   const {
     register,
     handleSubmit,
@@ -19,12 +18,18 @@ const Room = () => {
 
   useEffect(() => {
     const fetchRoomData = async () => {
-      const resultData = await axios.get(`${process.env.REACT_APP_Server_URL}/getroomOption`);
+      const resultData = await axios.get(
+        `${process.env.REACT_APP_Server_URL}/getroomOption`
+      );
       if (resultData) {
         setSelectData(resultData?.data?.data);
       }
     };
-    fetchRoomData();
+    if (sessionStorage.length > 0) {
+      navigate("/chat");
+    } else {
+      fetchRoomData();
+    }
   }, []);
 
   const handleFormSubmit = async (data) => {
@@ -35,12 +40,16 @@ const Room = () => {
       date: new Date().toDateString(),
       time: DateTime.local().toLocaleString(DateTime.TIME_24_SIMPLE),
     };
-    const result = await axios.post(`${process.env.REACT_APP_Server_URL}/saveroomdata`, data);
+    const result = await axios.post(
+      `${process.env.REACT_APP_Server_URL}/saveroomdata`,
+      data
+    );
     if (result?.data?.statusCode === 200) {
       navigate("/");
     }
     if (result?.data?.statusCode === 409) {
       setIsUserRegistered("User is Already Registered  for Same Room");
+      setIsActive(false);
     }
   };
 
@@ -100,7 +109,9 @@ const Room = () => {
               {errors?.room_name && errors?.room_name?.message}
             </p>
           </div>
-          <button id="joinroomid">{isActive ? "Loading...": "Join Room"}</button>
+          <button id="joinroomid">
+            {isActive ? "Loading..." : "Join Room"}
+          </button>
           <span onClick={() => navigate("/")} className="sigininNav">
             Signin ?
           </span>
