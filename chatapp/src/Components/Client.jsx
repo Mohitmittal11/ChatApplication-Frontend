@@ -20,7 +20,6 @@ const Client = () => {
     setSocket(io("https://chatapplication-server-wvxg.onrender.com"));
   }, []);
 
-
   useEffect(() => {
     async function fetchData() {
       const result = await axios.get(
@@ -41,11 +40,9 @@ const Client = () => {
     fetchData();
   }, []);
 
-
   useEffect(() => {
     myref.current?.scrollIntoView({ behavior: "instant" });
   }, [userMessage]);
-
 
   useEffect(() => {
     const roomId = sessionStorage.getItem("userId");
