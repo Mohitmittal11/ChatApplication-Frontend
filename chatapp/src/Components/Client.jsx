@@ -38,17 +38,17 @@ const Client = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [userMessage]);
 
   useEffect(() => {
     myref.current?.scrollIntoView({ behavior: "instant" });
   }, [userMessage]);
 
-  useEffect(()=> {
-    socket?.on('message',()=> {
-      window.location.reload();
-    })
-  },[])
+  // useEffect(()=> {
+  //   socket?.on('message',()=> {
+  //     window.location.reload();
+  //   })
+  // },[])
 
   useEffect(() => {
     const roomId = sessionStorage.getItem("userId");
@@ -110,9 +110,9 @@ const Client = () => {
         sendBodyData
       );
 
-      if(result.status === 200) {
-        window.location.reload(true);
-      }
+      // if(result.status === 200) {
+      //   window.location.reload(true);
+      // }
     }
   };
 
