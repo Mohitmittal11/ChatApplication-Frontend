@@ -12,13 +12,12 @@ const Client = () => {
   const [userdata, setUserdata] = useState();
   const [socket, setSocket] = useState(null);
   const [userMessage, setUserMessage] = useState();
-  const [isActive, setIsActive]= useState(false);
   const [userName, setUserName] = useState();
 
   let [messageData, setMessageData] = useState();
 
   useEffect(() => {
-    setSocket(io("https://chatapplication-server-wvxg.onrender.com"));
+    setSocket(io("http://localhost:8001"));
   }, []);
 
   useEffect(() => {
@@ -29,15 +28,12 @@ const Client = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const result = await axios.get(
-        `${process.env.REACT_APP_Server_URL}/getUserData`,
-        {
-          params: {
-            username: sessionStorageName,
-            roomid: sessionStorage.getItem("userId"),
-          },
-        }
-      );
+      const result = await axios.get(`${process.env.REACT_APP_Server_URL}/getUserData`, {
+        params: {
+          username: sessionStorageName,
+          roomid: sessionStorage.getItem("userId"),
+        },
+      });
 
       if (!result?.data?.errorMessage) {
         console.log("Result is ", result);
@@ -45,7 +41,7 @@ const Client = () => {
       }
     }
     fetchData();
-  }, [userMessage]);
+  }, []);
 
   useEffect(() => {
     socket?.on("message", () => {
@@ -87,7 +83,7 @@ const Client = () => {
 
   const handleMessageSubmit = async (e) => {
     e.preventDefault();
-    setIsActive(true);
+
     const element = document.getElementById("message-Area");
     element.scrollIntoView({ behavior: "instant" });
 
@@ -172,7 +168,7 @@ const Client = () => {
                 name="text"
                 id="sendmessageid"
               />
-              <button id="sendbtn">{isActive ? "Loading...": "Send"}</button>
+              <button id="sendbtn">Send</button>
             </form>
           </div>
         </div>

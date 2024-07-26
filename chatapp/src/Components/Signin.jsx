@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 const Signin = () => {
   const [optionData, setOptionData] = useState();
   const [errorMessage, setErrorMessage] = useState("");
+  const [isActive, setIsActive]= useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +29,7 @@ const Signin = () => {
   } = useForm();
 
   const formSubmit = async (data) => {
+    setIsActive(true);
     console.log("data un", data);
     const result = await axios.post(
       `${process.env.REACT_APP_Server_URL}/getSigininInfo`,
@@ -90,7 +92,7 @@ const Signin = () => {
               {errors?.room_name && errors?.room_name?.message}
             </p>
           </div>
-          <button id="sigininbtn">Sign In</button>
+          <button id="sigininbtn">{isActive ? "Loading...": "Sign In"}</button>
           <span onClick={() => navigate("/signup")} className="signUp">
             Sign Up?
           </span>
