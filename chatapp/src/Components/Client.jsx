@@ -33,7 +33,6 @@ const Client = () => {
       );
 
       if (!result?.data?.errorMessage) {
-        console.log("Result is ", result);
         setUserMessage(result?.data?.data);
       }
     }
@@ -44,11 +43,7 @@ const Client = () => {
     myref.current?.scrollIntoView({ behavior: "instant" });
   }, [userMessage]);
 
-  // useEffect(()=> {
-  //   socket?.on('message',()=> {
-  //     window.location.reload();
-  //   })
-  // },[])
+
 
   useEffect(() => {
     const roomId = sessionStorage.getItem("userId");
@@ -110,9 +105,7 @@ const Client = () => {
         sendBodyData
       );
 
-      // if(result.status === 200) {
-      //   window.location.reload(true);
-      // }
+   
     }
   };
 
