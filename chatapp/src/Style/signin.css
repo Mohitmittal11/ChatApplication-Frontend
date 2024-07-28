@@ -11,20 +11,22 @@ body {
     text-align: left;
     color: red;
 }
-
-#signinform {
-    display: flex;
-    justify-content: space-around;
-    flex-direction: column;
+.formContainer {
     height: fit-content;
     width: 300px;
     margin: 40px auto;
     padding: 20px 20px;
     background-color: whitesmoke;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-
-
 }
+
+/* #signinform {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    );
+
+} */
 
 .input-Name {
     width: 100%;
@@ -75,5 +77,11 @@ body {
     letter-spacing: 1px;
     padding: 6px 6px;
     cursor: pointer;
-
 }
+/* 
+@media screen and (max-width:"375px") {
+    #signinform {
+        width: 100px;
+    }
+
+} */

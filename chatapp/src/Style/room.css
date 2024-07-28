@@ -2,23 +2,29 @@
     text-align: center;
 }
 
-#form {
+.roomform {
     border: 1px solid black;
     height: fit-content;
     width: 400px;
     margin: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
     padding: 20px 20px;
     background-color: whitesmoke;
 
+
 }
+
+/* #form {
+ 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+} */
 
 .Username {
     display: block;
     height: 25px;
-    width: 100%;
+    width: 98%;
     margin-top: 10px;
 }
 
@@ -44,10 +50,9 @@
 
 .sigininNav {
     text-align: center;
-    margin-top: 8px;
+    margin-top: 12px;
     font-weight: 600;
     letter-spacing: 1px;
-    padding: 6px 6px;
     cursor: pointer;
 
 }
@@ -76,4 +81,18 @@
     color: red;
     font-weight: 550;
     letter-spacing: 1px;
+}
+
+
+@media screen and (max-width:475px) and (min-width: 375px) {
+    .roomform {
+        width: 320px;
+    }
+}
+
+@media screen and (max-width: 375px) {
+    .roomform {
+        width: 260px;
+
+    }
 }

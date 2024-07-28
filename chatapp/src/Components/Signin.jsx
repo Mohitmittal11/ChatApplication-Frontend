@@ -34,13 +34,11 @@ const Signin = () => {
 
   const formSubmit = async (data) => {
     setIsActive(true);
-    console.log("data un", data);
     const result = await axios.post(
       `${process.env.REACT_APP_Server_URL}/getSigininInfo`,
       data
     );
     if (result?.data?.statusCode === 200) {
-      console.log("Result is ", result);
       sessionStorage.setItem("userId", result?.data?.data[0]?.room_id);
       sessionStorage.setItem("username", result?.data?.data[0]?.username);
       sessionStorage.setItem("r_name", result?.data?.data[0]?.room_name);
@@ -99,9 +97,9 @@ const Signin = () => {
             </p>
           </div>
           <button id="sigininbtn">{isActive ? "Loading..." : "Sign In"}</button>
-          <span onClick={() => navigate("/signup")} className="signUp">
+          <p onClick={() => navigate("/signup")} className="signUp">
             Sign Up?
-          </span>
+          </p>
         </form>
       </div>
     </div>

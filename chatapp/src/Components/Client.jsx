@@ -12,9 +12,8 @@ const Client = () => {
   const sessionStorageName = sessionStorage.getItem("username");
   const sessionStorageRoomName = sessionStorage.getItem("r_name");
   const sessionStorageId = sessionStorage.getItem("userId");
-  const [userdata, setUserdata] = useState();
   const [socket, setSocket] = useState(null);
-  const [userMessage, setUserMessage] = useState();
+  let [userMessage, setUserMessage] = useState();
   const [userName, setUserName] = useState();
 
   let [messageData, setMessageData] = useState();
@@ -25,23 +24,9 @@ const Client = () => {
     } else {
       setSocket(io(`${process.env.REACT_APP_Server_URL}`));
       async function fetchData() {
-        const result = await axios.get(
-          `${process.env.REACT_APP_Server_URL}/getUserData`,
-          {
-            params: {
-              username: sessionStorageName,
-              roomid: sessionStorageId,
-            },
-          }
-        );
-
         const response = await axios.get(
           `${process.env.REACT_APP_Server_URL}/getUserAccordingtoRoom/${sessionStorageRoomName}`
         );
-
-        if (result?.data?.statusCode === 200) {
-          setUserMessage(result?.data?.data);
-        }
 
         if (response?.data?.statusCode === 200) {
           setUserName(response?.data?.data);
@@ -52,25 +37,71 @@ const Client = () => {
   }, []);
 
   useEffect(() => {
+    async function fetchMessageData() {
+      const result = await axios.get(
+        `${process.env.REACT_APP_Server_URL}/getUserData`,
+        {
+          params: {
+            username: sessionStorageName,
+            roomid: sessionStorageId,
+          },
+        }
+      );
+      if (result?.data?.statusCode === 200) {
+        setUserMessage(result?.data?.data);
+      }
+    }
+    fetchMessageData();
+  }, []);
+
+  useEffect(() => {
+    socket?.on("receivedMessage", (newMessage) => {
+      const date = newMessage._date;
+      if (userMessage) {
+        const index = userMessage.findIndex((item) => item._date === date);
+        if (index >= 0) {
+          const updatedMessageInfo = [
+            ...userMessage[index].messageinfo,
+            newMessage.messageinfo[0],
+          ];
+
+          const updatedObject = {
+            ...userMessage[index],
+            messageinfo: updatedMessageInfo,
+          };
+
+          setUserMessage([
+            ...userMessage.slice(0, index),
+            updatedObject,
+            ...userMessage.slice(index + 1),
+          ]);
+        } else {
+          setUserMessage([...userMessage, newMessage]);
+        }
+      }
+    });
+  }, [userMessage, socket]);
+
+  useEffect(() => {
     myref.current?.scrollIntoView({ behavior: "instant" });
   }, [userMessage]);
 
   useEffect(() => {
-    const roomId = sessionStorage.getItem("userId");
-    const userName = sessionStorageName;
     setMessageData({
       ...messageData,
-      username: userName,
-      room_id: roomId,
+      username: sessionStorageName,
+      room_id: sessionStorageId,
     });
-    if (roomId && roomId !== null && roomId !== undefined) {
-      socket?.emit("join", roomId);
-      setUserdata({ ...userdata, roomid: roomId });
+    if (
+      sessionStorageId &&
+      sessionStorageId !== null &&
+      sessionStorageId !== undefined
+    ) {
+      socket?.emit("join", sessionStorageId);
     }
   }, [socket]);
 
   const handleInputChange = (e) => {
-    setUserdata({ ...userdata, usermessage: e.target.value });
     setMessageData({ ...messageData, message: e.target.value });
   };
 
@@ -78,7 +109,6 @@ const Client = () => {
     e.preventDefault();
     document.getElementById("sendmessageid").value = "";
 
-    socket?.emit("message", userdata);
     messageData = {
       ...messageData,
       microTime: Date.now(),
@@ -102,9 +132,9 @@ const Client = () => {
         `${process.env.REACT_APP_Server_URL}/saveMessageData`,
         sendBodyData
       );
-      if (result.status === 200) {
-        window.location.reload();
-      }
+
+      socket?.emit("message", sendBodyData);
+      setMessageData({ ...messageData, message: "" });
     }
   };
   const handleLogOut = () => {
@@ -125,37 +155,43 @@ const Client = () => {
       <h3 className="roomName">{sessionStorage.getItem("r_name")}</h3>
       <div className="innerOuter">
         <div className="roomsdata">
-          {userName && userName?.map((value) => <h3>{value.username}</h3>)}
+          {userName &&
+            userName?.map((value, index) => (
+              <h3 key={index}>{value.username}</h3>
+            ))}
         </div>
         <></>
         <div className="main-chat-container">
           <div id="message-Area">
             <div id="scrollAutomatically" className="message">
-              {userMessage?.map((value) => {
-                return (
-                  <>
-                    <h3 className="date">{value._date}</h3>
-                    {value?.messageinfo?.map((data) => {
-                      return (
-                        <div
-                          ref={myref}
-                          className={
-                            data.username === sessionStorageName
-                              ? "outgoingMessage"
-                              : "incomingMessage"
-                          }
-                        >
-                          <h4>
-                            {data.message}
-                            <p className="datauserName">{data.username}</p>
-                          </h4>
-                          <p className="dateTime">{data.time}</p>
-                        </div>
-                      );
-                    })}
-                  </>
-                );
-              })}
+              {userMessage &&
+                userMessage?.map((value, index) => {
+                  return (
+                    <>
+                      <h3 key={index} className="date">
+                        {value._date}
+                      </h3>
+                      {value?.messageinfo?.map((data, index) => {
+                        return (
+                          <div
+                            ref={myref}
+                            className={
+                              data.username === sessionStorageName
+                                ? "outgoingMessage"
+                                : "incomingMessage"
+                            }
+                          >
+                            <h4 key={index}>
+                              {data.message}
+                              <p className="datauserName">{data.username}</p>
+                            </h4>
+                            <p className="dateTime">{data.time}</p>
+                          </div>
+                        );
+                      })}
+                    </>
+                  );
+                })}
             </div>
           </div>
           <></>
@@ -168,8 +204,15 @@ const Client = () => {
                 placeholder="Enter Text"
                 name="text"
                 id="sendmessageid"
+                onKeyDown={(e) => {
+                  if (e.code === "Space" && e.target.value === "") {
+                    e.preventDefault();
+                  }
+                }}
               />
-              <button id="sendbtn">Send</button>
+              <button disabled={!messageData?.message} id="sendbtn">
+                Send
+              </button>
             </form>
           </div>
         </div>
@@ -178,22 +221,3 @@ const Client = () => {
   );
 };
 export default Client;
-
-//  {userMessage?.map(
-//           (value) => (
-//             (<h1>{value._date}</h1>),
-//             value?.messageinfo?.map((data) => (
-//               <div
-//                 ref={myref}
-//                 className={
-//                   data.username === sessionStorageName
-//                     ? "outgoingMessage"
-//                     : "incomingMessage"
-//                 }
-//               >
-//                 <h4>{data.message}</h4>
-//                 <p>{data.time}</p>
-//               </div>
-//             ))
-//           )
-//         )}

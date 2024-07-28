@@ -16,7 +16,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
-    height: 420px;
+    height: 460px;
 }
 
 .dateTime {
@@ -69,7 +69,7 @@ body {
 
 .sendtextMessage {
     height: 37px;
-    width: 506px;
+    width: 597px;
     text-indent: 10px;
     border: none;
     z-index: 1;
@@ -85,7 +85,7 @@ body {
 }
 
 #sendbtn {
-    padding: 12px 20px;
+    padding: 10px 20px;
     font-size: 17px;
     letter-spacing: 1px;
     font-weight: 600;
@@ -93,6 +93,12 @@ body {
     color: white;
     border: none;
     cursor: pointer;
+    position: absolute;
+    right: 0;
+}
+
+#sendbtn:disabled {
+    opacity: 0.5;
 }
 
 
@@ -119,10 +125,12 @@ body {
     width: fit-content;
     margin-right: 20px;
     padding: 8px 8px;
-    background-color: aquamarine;
+    background-color: rgb(73, 73, 235);
     color: white;
     float: right;
     cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 1px;
 }
 
 .datauserName {
@@ -148,4 +156,104 @@ body {
     padding: 7px 4px;
     border-radius: 10px;
     background-color: #bfd2db;
+}
+
+@media screen and (max-width: 768px) and (min-width: 600px) {
+    .main-chat-container {
+        width: 450px;
+    }
+
+    .sendtextMessage {
+        width: 447px;
+    }
+
+    .roomsdata {
+        width: 130px;
+    }
+
+    .outgoingMessage {
+        margin: 0px 20px;
+    }
+
+    .incomingMessage {
+        margin: 0px 20px;
+    }
+
+}
+
+@media screen and (max-width:600px) and (min-width: 500px) {
+
+    .main-chat-container {
+        width: 350px;
+    }
+
+    .sendtextMessage {
+        width: 347px;
+    }
+
+    .roomsdata {
+        width: 130px;
+    }
+
+    .roomsdata h3 {
+        font-size: 14px;
+        text-wrap: wrap;
+
+    }
+
+    .outgoingMessage {
+        margin: 0px 20px;
+    }
+
+    .incomingMessage {
+        margin: 0px 20px;
+    }
+}
+
+@media screen and (max-width: 500px) and (min-width: 425px) {
+
+    .roomsdata {
+        width: 100px;
+    }
+
+    .roomsdata h3 {
+        font-size: 11px;
+        text-wrap: wrap;
+    }
+
+    .main-chat-container {
+        width: 290px;
+    }
+
+    .sendtextMessage {
+        width: 287px;
+    }
+
+}
+
+@media screen and (max-width: 425px) {
+
+    .innerOuter {
+        justify-content: center;
+        flex-direction: column-reverse;
+        row-gap: 40px;
+    }
+
+    .main-chat-container {
+        width: 100%;
+    }
+
+    .sendtextMessage {
+        width: 97%;
+    }
+
+    #sendbtn {
+        position: absolute;
+        right: 0;
+    }
+
+    .roomsdata {
+        width: 90%;
+        margin-left: 8px;
+    }
 }

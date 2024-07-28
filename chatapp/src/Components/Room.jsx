@@ -112,9 +112,9 @@ const Room = () => {
           <button id="joinroomid">
             {isActive ? "Loading..." : "Join Room"}
           </button>
-          <span onClick={() => navigate("/")} className="sigininNav">
+          <p onClick={() => navigate("/")} className="sigininNav">
             Signin ?
-          </span>
+          </p>
         </form>
       </div>
     </div>
