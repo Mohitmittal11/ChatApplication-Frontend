@@ -37,24 +37,6 @@ const Client = () => {
   }, []);
 
   useEffect(() => {
-    async function fetchMessageData() {
-      const result = await axios.get(
-        `${process.env.REACT_APP_Server_URL}/getUserData`,
-        {
-          params: {
-            username: sessionStorageName,
-            roomid: sessionStorageId,
-          },
-        }
-      );
-      if (result?.data?.statusCode === 200) {
-        setUserMessage(result?.data?.data);
-      }
-    }
-    fetchMessageData();
-  }, []);
-
-  useEffect(() => {
     socket?.on("receivedMessage", (newMessage) => {
       const date = newMessage._date;
       if (userMessage) {
@@ -81,6 +63,24 @@ const Client = () => {
       }
     });
   }, [userMessage, socket]);
+
+  useEffect(() => {
+    async function fetchMessageData() {
+      const result = await axios.get(
+        `${process.env.REACT_APP_Server_URL}/getUserData`,
+        {
+          params: {
+            username: sessionStorageName,
+            roomid: sessionStorageId,
+          },
+        }
+      );
+      if (result?.data?.statusCode === 200) {
+        setUserMessage(result?.data?.data);
+      }
+    }
+    fetchMessageData();
+  }, []);
 
   useEffect(() => {
     myref.current?.scrollIntoView({ behavior: "instant" });
