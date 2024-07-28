@@ -107,34 +107,39 @@ const Client = () => {
 
   const handleMessageSubmit = async (e) => {
     e.preventDefault();
-    document.getElementById("sendmessageid").value = "";
 
-    messageData = {
-      ...messageData,
-      microTime: Date.now(),
-      time: moment().format("hh:mm a"),
-      Date: moment().format("Do MMM YYYY"),
-    };
+    if (!sessionStorageName || !sessionStorageRoomName || !sessionStorageId) {
+      navigate("/");
+    } else {
+      document.getElementById("sendmessageid").value = "";
 
-    let messageArrayData = [];
+      messageData = {
+        ...messageData,
+        microTime: Date.now(),
+        time: moment().format("hh:mm a"),
+        Date: moment().format("Do MMM YYYY"),
+      };
 
-    messageArrayData.push(messageData);
+      let messageArrayData = [];
 
-    let sendBodyData = {};
-    sendBodyData = {
-      ...sendBodyData,
-      _date: moment().format("Do MMM YYYY"),
-      messageinfo: messageArrayData,
-    };
+      messageArrayData.push(messageData);
 
-    if (sendBodyData) {
-      const result = await axios.post(
-        `${process.env.REACT_APP_Server_URL}/saveMessageData`,
-        sendBodyData
-      );
+      let sendBodyData = {};
+      sendBodyData = {
+        ...sendBodyData,
+        _date: moment().format("Do MMM YYYY"),
+        messageinfo: messageArrayData,
+      };
 
-      socket?.emit("message", sendBodyData);
-      setMessageData({ ...messageData, message: "" });
+      if (sendBodyData) {
+        const result = await axios.post(
+          `${process.env.REACT_APP_Server_URL}/saveMessageData`,
+          sendBodyData
+        );
+
+        socket?.emit("message", sendBodyData);
+        setMessageData({ ...messageData, message: "" });
+      }
     }
   };
   const handleLogOut = () => {
