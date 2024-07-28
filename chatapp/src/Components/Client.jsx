@@ -93,7 +93,7 @@ const Client = () => {
         window.location.reload();
       }
     });
-  }, [userMessage, socket, refresh]);
+  }, [userMessage, socket]);
 
   useEffect(() => {
     myref.current?.scrollIntoView({ behavior: "instant" });
