@@ -15,6 +15,7 @@ const Client = () => {
   const [socket, setSocket] = useState(null);
   let [userMessage, setUserMessage] = useState();
   const [userName, setUserName] = useState();
+  const [refresh, setRefresh] = useState(0);
 
   let [messageData, setMessageData] = useState();
 
@@ -30,6 +31,7 @@ const Client = () => {
 
         if (response?.data?.statusCode === 200) {
           setUserName(response?.data?.data);
+          setRefresh(1);
         }
       }
       fetchData();
@@ -37,11 +39,37 @@ const Client = () => {
   }, []);
 
   useEffect(() => {
+    async function fetchMessageData() {
+      const result = await axios.get(
+        `${process.env.REACT_APP_Server_URL}/getUserData`,
+        {
+          params: {
+            username: sessionStorageName,
+            roomid: sessionStorageId,
+          },
+        }
+      );
+      if (result?.data?.statusCode === 200) {
+        setUserMessage(result?.data?.data);
+      }
+    }
+    fetchMessageData();
+  }, []);
+
+  if (userMessage) {
+    console.log("Usermesgh", userMessage);
+  }
+
+  useEffect(() => {
     socket?.on("receivedMessage", (newMessage) => {
+      console.log("fgvbhnjm,", newMessage);
       const date = newMessage._date;
-      if (userMessage) {
+      if (userMessage?.length > 0) {
+        console.log("User message is ", userMessage);
         const index = userMessage.findIndex((item) => item._date === date);
         if (index >= 0) {
+          console.log("Index is ", index);
+
           const updatedMessageInfo = [
             ...userMessage[index].messageinfo,
             newMessage.messageinfo[0],
@@ -61,26 +89,11 @@ const Client = () => {
           setUserMessage([...userMessage, newMessage]);
         }
       }
-    });
-  }, [userMessage, socket]);
-
-  useEffect(() => {
-    async function fetchMessageData() {
-      const result = await axios.get(
-        `${process.env.REACT_APP_Server_URL}/getUserData`,
-        {
-          params: {
-            username: sessionStorageName,
-            roomid: sessionStorageId,
-          },
-        }
-      );
-      if (result?.data?.statusCode === 200) {
-        setUserMessage(result?.data?.data);
+      if (refresh === 0) {
+        window.location.reload();
       }
-    }
-    fetchMessageData();
-  }, []);
+    });
+  }, [userMessage, socket, refresh]);
 
   useEffect(() => {
     myref.current?.scrollIntoView({ behavior: "instant" });
@@ -136,8 +149,8 @@ const Client = () => {
           `${process.env.REACT_APP_Server_URL}/saveMessageData`,
           sendBodyData
         );
-
         socket?.emit("message", sendBodyData);
+
         setMessageData({ ...messageData, message: "" });
       }
     }
