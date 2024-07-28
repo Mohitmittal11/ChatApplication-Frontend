@@ -31,7 +31,6 @@ const Client = () => {
 
         if (response?.data?.statusCode === 200) {
           setUserName(response?.data?.data);
-          setRefresh(1);
         }
       }
       fetchData();
@@ -51,6 +50,7 @@ const Client = () => {
       );
       if (result?.data?.statusCode === 200) {
         setUserMessage(result?.data?.data);
+        setRefresh(1);
       }
     }
     fetchMessageData();
