@@ -15,7 +15,6 @@ const Client = () => {
   const [socket, setSocket] = useState(null);
   let [userMessage, setUserMessage] = useState();
   const [userName, setUserName] = useState();
-  const [refresh, setRefresh] = useState(0);
 
   let [messageData, setMessageData] = useState();
 
@@ -29,7 +28,7 @@ const Client = () => {
           `${process.env.REACT_APP_Server_URL}/getUserAccordingtoRoom/${sessionStorageRoomName}`
         );
 
-        if (response?.data?.statusCode === 200) {
+        if (response?.status === 200) {
           setUserName(response?.data?.data);
         }
       }
@@ -48,9 +47,8 @@ const Client = () => {
           },
         }
       );
-      if (result?.data?.statusCode === 200) {
+      if (result?.status === 200) {
         setUserMessage(result?.data?.data);
-        setRefresh(1);
       }
     }
     fetchMessageData();
@@ -89,7 +87,7 @@ const Client = () => {
           setUserMessage([...userMessage, newMessage]);
         }
       }
-      if (refresh === 0) {
+      if (userMessage?.length === 0) {
         window.location.reload();
       }
     });
