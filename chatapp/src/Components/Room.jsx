@@ -7,7 +7,6 @@ import { DateTime } from "luxon";
 
 const Room = () => {
   const navigate = useNavigate();
-  const [selectdata, setSelectData] = useState();
   const [isuserRegistered, setIsUserRegistered] = useState();
   const [isActive, setIsActive] = useState(false);
   const {
@@ -17,18 +16,8 @@ const Room = () => {
   } = useForm();
 
   useEffect(() => {
-    const fetchRoomData = async () => {
-      const resultData = await axios.get(
-        `${process.env.REACT_APP_Server_URL}/getroomOption`
-      );
-      if (resultData) {
-        setSelectData(resultData?.data?.data);
-      }
-    };
     if (sessionStorage.length > 0) {
       navigate("/chat");
-    } else {
-      fetchRoomData();
     }
   }, []);
 
@@ -40,15 +29,19 @@ const Room = () => {
       date: new Date().toDateString(),
       time: DateTime.local().toLocaleString(DateTime.TIME_24_SIMPLE),
     };
+
     const result = await axios.post(
-      `${process.env.REACT_APP_Server_URL}/saveroomdata`,
+      `${process.env.REACT_APP_Server_URL}/saveUserData`,
       data
     );
     if (result?.data?.statusCode === 200) {
-      navigate("/");
+      console.log("Result is", result.data.data);
+      sessionStorage.setItem("from", result?.data?.data?.username);
+      sessionStorage.setItem("userId", result?.data?.data?._id);
+      navigate("/chat");
     }
     if (result?.data?.statusCode === 409) {
-      setIsUserRegistered("User is Already Registered  for Same Room");
+      setIsUserRegistered("User is Already Registered");
       setIsActive(false);
     }
   };
@@ -87,28 +80,7 @@ const Room = () => {
               {errors?.username && errors?.username?.message}
             </p>
           </div>
-          <div className="select-room">
-            <label className="usernamelabel">Select Room</label>
-            <select
-              name="room_name"
-              className="selectRoom"
-              {...register("room_name", {
-                required: "*Please Choose one Option",
-              })}
-            >
-              {" "}
-              <option value={""}>Choose Room</option>
-              {selectdata &&
-                selectdata.map((value) => (
-                  <option value={`${value.room_name_type}`}>
-                    {value.room_name_type}
-                  </option>
-                ))}
-            </select>
-            <p className="roomError">
-              {errors?.room_name && errors?.room_name?.message}
-            </p>
-          </div>
+
           <button id="joinroomid">
             {isActive ? "Loading..." : "Join Room"}
           </button>

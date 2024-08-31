@@ -5,10 +5,15 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 const Signin = () => {
-  const [optionData, setOptionData] = useState();
   const [errorMessage, setErrorMessage] = useState("");
   const [isActive, setIsActive] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (sessionStorage.length > 0) {
+      navigate("/chat");
+    }
+  }, []);
 
   const {
     register,
@@ -16,34 +21,17 @@ const Signin = () => {
     handleSubmit,
   } = useForm();
 
-  useEffect(() => {
-    const fetchRoomData = async () => {
-      const resultData = await axios.get(
-        `${process.env.REACT_APP_Server_URL}/getroomOption`
-      );
-      if (resultData) {
-        setOptionData(resultData?.data?.data);
-      }
-    };
-    if (sessionStorage.length > 0) {
-      navigate("/chat");
-    } else {
-      fetchRoomData();
-    }
-  }, []);
-
   const formSubmit = async (data) => {
     setIsActive(true);
+
     const result = await axios.post(
       `${process.env.REACT_APP_Server_URL}/getSigininInfo`,
       data
     );
     if (result?.data?.statusCode === 200) {
-      sessionStorage.setItem("userId", result?.data?.data[0]?.room_id);
-      sessionStorage.setItem("username", result?.data?.data[0]?.username);
-      sessionStorage.setItem("r_name", result?.data?.data[0]?.room_name);
+      sessionStorage.setItem("from", result?.data?.data[0]?.username);
+      sessionStorage.setItem("userId", result?.data?.data[0]._id);
       navigate("/chat");
-      setIsActive(false);
     } else {
       setErrorMessage("Please Fill Correct Credentials");
       setIsActive(false);
@@ -74,28 +62,6 @@ const Signin = () => {
             className="input-Name"
           />
           <p className="errors"> {errors?.user_name?.message}</p>
-          <div className="select-room">
-            <label className="usernamelabel">Select Room</label>
-            <select
-              name="room_name"
-              className="selectRoomdata"
-              {...register("room_name", {
-                required: "*Please Choose one Option",
-              })}
-            >
-              {" "}
-              <option value={""}>Choose Room</option>
-              {optionData &&
-                optionData.map((value) => (
-                  <option value={`${value.room_name_type}`}>
-                    {value.room_name_type}
-                  </option>
-                ))}
-            </select>
-            <p className="roomError">
-              {errors?.room_name && errors?.room_name?.message}
-            </p>
-          </div>
           <button id="sigininbtn">{isActive ? "Loading..." : "Sign In"}</button>
           <p onClick={() => navigate("/signup")} className="signUp">
             Sign Up?

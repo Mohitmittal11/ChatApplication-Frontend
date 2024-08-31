@@ -19,6 +19,8 @@ body {
     height: 460px;
 }
 
+
+
 .dateTime {
     color: gray;
 }
@@ -29,15 +31,19 @@ body {
 
 .roomsdata {
     height: 500px;
+    overflow-y: scroll;
     width: 150px;
     background-color: whitesmoke;
     padding: 0px 10px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     z-index: 1;
-    overflow-y: scroll;
 }
 
-.roomsdata h3 {
+#submitForm {
+    display: none;
+}
+
+.username {
     text-align: center;
     padding: 5px 0px;
     color: whitesmoke;
@@ -45,7 +51,8 @@ body {
     font-weight: 600;
     letter-spacing: 1px;
     font-weight: 550;
-    text-wrap: nowrap;
+    text-wrap: wrap;
+    cursor: pointer;
 }
 
 
@@ -133,6 +140,55 @@ body {
     letter-spacing: 1px;
 }
 
+.createGroup {
+    padding: 8px 8px;
+    float: right;
+    background-color: rgb(94, 94, 211);
+    color: white;
+    width: fit-content;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.groupName {
+    font-size: 16px;
+    background-color: rgb(92, 190, 92);
+    color: whitesmoke;
+    font-weight: 600;
+    padding: 6px;
+    text-wrap: wrap;
+    text-align: center;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.activegroupname {
+    font-size: 16px;
+    color: greenyellow;
+    background-color: black;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 6px;
+    text-wrap: wrap;
+    text-align: center;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.activeUserName {
+    text-align: center;
+    padding: 5px 0px;
+    color: greenyellow;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-weight: 550;
+    text-wrap: wrap;
+    cursor: pointer;
+    background-color: black;
+
+    border-radius: 10px;
+}
+
 .datauserName {
     /* margin: 5px 5px; */
     /* padding: auto; */
@@ -195,7 +251,7 @@ body {
         width: 130px;
     }
 
-    .roomsdata h3 {
+    .username {
         font-size: 14px;
         text-wrap: wrap;
 
@@ -216,7 +272,7 @@ body {
         width: 100px;
     }
 
-    .roomsdata h3 {
+    .username {
         font-size: 11px;
         text-wrap: wrap;
     }

@@ -9,27 +9,42 @@ import axios from "axios";
 const Client = () => {
   const navigate = useNavigate();
   const myref = useRef(null);
-  const sessionStorageName = sessionStorage.getItem("username");
-  const sessionStorageRoomName = sessionStorage.getItem("r_name");
-  const sessionStorageId = sessionStorage.getItem("userId");
+  const sessionStorageName = sessionStorage.getItem("from");
+  const sessionId = sessionStorage.getItem("sessionId");
+  const receipient = sessionStorage.getItem("to");
+  const userId = sessionStorage.getItem("userId");
+  const groupsessionId = sessionStorage.getItem("groupsessionId");
+  const groupname = sessionStorage.getItem("groupname");
+  const [groupDetails, setGroupDetails] = useState();
   const [socket, setSocket] = useState(null);
-  let [userMessage, setUserMessage] = useState();
+  let [userMessage, setUserMessage] = useState([]);
   const [userName, setUserName] = useState();
-
   let [messageData, setMessageData] = useState();
 
   useEffect(() => {
-    if (!sessionStorageName || !sessionStorageRoomName || !sessionStorageId) {
+    if (!sessionStorageName || !userId) {
       navigate("/");
     } else {
       setSocket(io(`${process.env.REACT_APP_Server_URL}`));
       async function fetchData() {
         const response = await axios.get(
-          `${process.env.REACT_APP_Server_URL}/getUserAccordingtoRoom/${sessionStorageRoomName}`
+          `${process.env.REACT_APP_Server_URL}/getAllUser`
         );
-
-        if (response?.status === 200) {
+        if (response.status === 200) {
+          console.log("response data is", response.data.data);
           setUserName(response?.data?.data);
+        }
+
+        const result = await axios.get(
+          `${process.env.REACT_APP_Server_URL}/getGroupName`,
+          {
+            params: {
+              username: sessionStorageName,
+            },
+          }
+        );
+        if (result?.data?.statusCode === 200) {
+          setGroupDetails(result?.data?.data);
         }
       }
       fetchData();
@@ -37,37 +52,52 @@ const Client = () => {
   }, []);
 
   useEffect(() => {
+    if (sessionId || groupsessionId) {
+      document.getElementById("submitForm").style.display = "block";
+    }
+  }, []);
+
+  useEffect(() => {
     async function fetchMessageData() {
-      const result = await axios.get(
-        `${process.env.REACT_APP_Server_URL}/getUserData`,
-        {
-          params: {
-            username: sessionStorageName,
-            roomid: sessionStorageId,
-          },
+      if (sessionId) {
+        const result = await axios.get(
+          `${process.env.REACT_APP_Server_URL}/getSingleChat`,
+          {
+            params: {
+              username: sessionStorageName,
+              sessionId: sessionId,
+            },
+          }
+        );
+        if (result?.status === 200) {
+          console.log("Result is ", result);
+          setUserMessage(result?.data?.data);
         }
-      );
-      if (result?.status === 200) {
-        setUserMessage(result?.data?.data);
+      } else if (groupsessionId) {
+        const result = await axios.get(
+          `${process.env.REACT_APP_Server_URL}/getUserData`,
+          {
+            params: {
+              username: sessionStorageName,
+              roomid: groupsessionId,
+            },
+          }
+        );
+        if (result?.status === 200) {
+          setUserMessage(result?.data?.data);
+        }
       }
     }
     fetchMessageData();
   }, []);
 
-  if (userMessage) {
-    console.log("Usermesgh", userMessage);
-  }
-
   useEffect(() => {
-    socket?.on("receivedMessage", (newMessage) => {
-      console.log("fgvbhnjm,", newMessage);
+    socket?.on("receivedGroupMessage", (newMessage) => {
       const date = newMessage._date;
-      if (userMessage?.length > 0) {
-        console.log("User message is ", userMessage);
+
+      if (userMessage) {
         const index = userMessage.findIndex((item) => item._date === date);
         if (index >= 0) {
-          console.log("Index is ", index);
-
           const updatedMessageInfo = [
             ...userMessage[index].messageinfo,
             newMessage.messageinfo[0],
@@ -87,8 +117,32 @@ const Client = () => {
           setUserMessage([...userMessage, newMessage]);
         }
       }
-      if (userMessage?.length === 0) {
-        window.location.reload();
+    });
+  }, [userMessage, socket]);
+
+  useEffect(() => {
+    socket?.on("receivedMessage", (newMessage) => {
+      const date = newMessage._date;
+
+      if (userMessage) {
+        const index = userMessage.findIndex((item) => item._date === date);
+        if (index >= 0) {
+          const updatedMessageInfo = [
+            ...userMessage[index].messageinfo,
+            newMessage.messageinfo[0],
+          ];
+          const updatedObject = {
+            ...userMessage[index],
+            messageinfo: updatedMessageInfo,
+          };
+          setUserMessage([
+            ...userMessage.slice(0, index),
+            updatedObject,
+            ...userMessage.slice(index + 1),
+          ]);
+        } else {
+          setUserMessage([...userMessage, newMessage]);
+        }
       }
     });
   }, [userMessage, socket]);
@@ -98,17 +152,10 @@ const Client = () => {
   }, [userMessage]);
 
   useEffect(() => {
-    setMessageData({
-      ...messageData,
-      username: sessionStorageName,
-      room_id: sessionStorageId,
-    });
-    if (
-      sessionStorageId &&
-      sessionStorageId !== null &&
-      sessionStorageId !== undefined
-    ) {
-      socket?.emit("join", sessionStorageId);
+    if (sessionId && sessionId != null && sessionId !== undefined) {
+      socket?.emit("join", sessionId);
+    } else {
+      socket?.emit("join", groupsessionId);
     }
   }, [socket]);
 
@@ -116,43 +163,6 @@ const Client = () => {
     setMessageData({ ...messageData, message: e.target.value });
   };
 
-  const handleMessageSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!sessionStorageName || !sessionStorageRoomName || !sessionStorageId) {
-      navigate("/");
-    } else {
-      document.getElementById("sendmessageid").value = "";
-
-      messageData = {
-        ...messageData,
-        microTime: Date.now(),
-        time: moment().format("hh:mm a"),
-        Date: moment().format("Do MMM YYYY"),
-      };
-
-      let messageArrayData = [];
-
-      messageArrayData.push(messageData);
-
-      let sendBodyData = {};
-      sendBodyData = {
-        ...sendBodyData,
-        _date: moment().format("Do MMM YYYY"),
-        messageinfo: messageArrayData,
-      };
-
-      if (sendBodyData) {
-        const result = await axios.post(
-          `${process.env.REACT_APP_Server_URL}/saveMessageData`,
-          sendBodyData
-        );
-        socket?.emit("message", sendBodyData);
-
-        setMessageData({ ...messageData, message: "" });
-      }
-    }
-  };
   const handleLogOut = () => {
     const result = window.confirm("Do You Want to Log Out");
     if (result) {
@@ -161,20 +171,144 @@ const Client = () => {
     }
   };
 
+  const handleUserName = (e, value) => {
+    e.preventDefault();
+    console.log("User name at which we enter", value?.username);
+
+    sessionStorage.setItem("to", value.username);
+    const sessionData = [value?._id, userId].sort().join("_");
+    sessionStorage.setItem("sessionId", sessionData);
+    document.getElementById("submitForm").style.display = "block";
+    sessionStorage.removeItem("groupsessionId");
+    sessionStorage.removeItem("groupname");
+    window.location.reload();
+  };
+
+  const handleGroup = (e) => {
+    e.preventDefault();
+    navigate("/userList");
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    if (!sessionStorageName) {
+      navigate("/");
+    } else {
+      document.getElementById("sendmessageid").value = "";
+      if (sessionId) {
+        messageData = {
+          ...messageData,
+          from: sessionStorageName,
+          microTime: Date.now(),
+          time: moment().format("hh:mm a"),
+          session_id: sessionId,
+          to: receipient,
+          _date: moment().format("Do MMM YYYY"),
+        };
+
+        let sendBodyData = {};
+        sendBodyData = {
+          ...sendBodyData,
+          _date: moment().format("Do MMM YYYY"),
+          messageinfo: [messageData],
+        };
+        if (sendBodyData) {
+          socket?.emit("message", sendBodyData);
+
+          setMessageData({ ...messageData, message: "" });
+        }
+      } else if (groupsessionId) {
+        messageData = {
+          ...messageData,
+          microTime: Date.now(),
+          time: moment().format("hh:mm a"),
+          group_name: groupname,
+          group_id: groupsessionId,
+          _date: moment().format("Do MMM YYYY"),
+          from: sessionStorageName,
+        };
+        const messageArrayData = [];
+        messageArrayData.push(messageData);
+
+        let sendBodyData = {};
+        sendBodyData = {
+          ...sendBodyData,
+          _date: moment().format("Do MMM YYYY"),
+          messageinfo: messageArrayData,
+        };
+
+        if (sendBodyData) {
+          socket?.emit("groupmessage", sendBodyData);
+          setMessageData({ ...messageData, message: "" });
+        }
+      }
+    }
+  };
+
+  const handleGroupName = (item) => {
+    sessionStorage.setItem("groupname", item.group_name);
+    sessionStorage.setItem("groupsessionId", item._id);
+    console.log("Item name is ", item.group_name);
+    document.getElementById("submitForm").style.display = "block";
+    sessionStorage.removeItem("to");
+    sessionStorage.removeItem("sessionId");
+
+    window.location.reload();
+  };
+
   return (
     <div className="outer-container">
       <ToastContainer />
       <h4 className="logout" onClick={handleLogOut}>
         Log Out
       </h4>
+      <h3 onClick={handleGroup} className="createGroup">
+        Create Group
+      </h3>
       <h2>Chat Application</h2>
-      <h3 className="roomName">{sessionStorage.getItem("r_name")}</h3>
+
+      <h3 className="roomName">({sessionStorageName})</h3>
       <div className="innerOuter">
+        <></>
         <div className="roomsdata">
           {userName &&
-            userName?.map((value, index) => (
-              <h3 key={index}>{value.username}</h3>
-            ))}
+            userName?.map((value, index) => {
+              if (value.username !== sessionStorageName) {
+                return (
+                  <h3
+                    className={
+                      value.username === receipient
+                        ? "activeUserName"
+                        : "username"
+                    }
+                    onClick={(e) => {
+                      handleUserName(e, value);
+                    }}
+                    key={index}
+                  >
+                    {value.username}
+                  </h3>
+                );
+              }
+            })}
+          {groupDetails &&
+            groupDetails?.map((item) => {
+              return (
+                <p
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleGroupName(item);
+                  }}
+                  className={
+                    item.group_name === groupname
+                      ? "activegroupname"
+                      : "groupName"
+                  }
+                >
+                  {item.group_name}
+                </p>
+              );
+            })}
         </div>
         <></>
         <div className="main-chat-container">
@@ -192,6 +326,7 @@ const Client = () => {
                           <div
                             ref={myref}
                             className={
+                              data.from === sessionStorageName ||
                               data.username === sessionStorageName
                                 ? "outgoingMessage"
                                 : "incomingMessage"
@@ -199,7 +334,7 @@ const Client = () => {
                           >
                             <h4 key={index}>
                               {data.message}
-                              <p className="datauserName">{data.username}</p>
+                              <p className="datauserName">{data.from}</p>
                             </h4>
                             <p className="dateTime">{data.time}</p>
                           </div>
@@ -212,7 +347,7 @@ const Client = () => {
           </div>
           <></>
           <div className="sendMessageField">
-            <form onSubmit={handleMessageSubmit}>
+            <form id="submitForm" onSubmit={handleFormSubmit}>
               <input
                 onChange={handleInputChange}
                 className="sendtextMessage"
