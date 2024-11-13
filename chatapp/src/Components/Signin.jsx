@@ -1,4 +1,5 @@
 import { React, useEffect, useState } from "react";
+import useAuthStore from "../Store/authStore";
 import "../Style/signin.css";
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -9,16 +10,17 @@ const Signin = () => {
   const [isActive, setIsActive] = useState(false);
   const navigate = useNavigate();
 
+  const { name } = useAuthStore.getState();
   useEffect(() => {
     if (sessionStorage.length > 0) {
       navigate("/chat");
     }
-  }, []);
-
+  }, [navigate]);
   const {
     register,
     formState: { errors },
     handleSubmit,
+    setValue,
   } = useForm();
 
   const formSubmit = async (data) => {
@@ -55,6 +57,9 @@ const Signin = () => {
               if (e.code === "Space" && e.target.value === "") {
                 e.preventDefault();
               }
+            }}
+            onFocus={() => {
+              setValue("user_name", name);
             }}
             name="user_name"
             type="text"
